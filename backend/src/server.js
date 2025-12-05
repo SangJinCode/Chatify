@@ -14,9 +14,9 @@ const app = express();
 
 const PORT = ENV.PORT || 3000;
 
-app.get("/", (req,res) => {
-    res.send("Hello World!");
-})
+// app.get("/", (req,res) => {
+//     res.send("Hello World!");
+// })
 
 app.use("/api/auth", authRoutes)
 app.use("/api/messages", messageRoutes)
