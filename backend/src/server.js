@@ -1,8 +1,11 @@
 // const express = require('express')
 import express from "express";
 import { ENV } from "./lib/env.js";
+import cookieParser from "cookie-parser";
 import path from "path";
+import cors from "cors";
 
+import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js"
 import messageRoutes from "./routes/message.route.js"
 
@@ -17,6 +20,19 @@ const PORT = ENV.PORT || 3000;
 // app.get("/", (req,res) => {
 //     res.send("Hello World!");
 // })
+
+//JSON 형식의 요청(body) 을 자동으로 파싱해서 req.body로 만들어주는 미들웨어
+//POST 요청할 때 { name: "Tom" } 같은 body를 서버가 바로 읽을 수 있게 해줌
+app.use(express.json({ limit: "5mb" })); 
+
+//프론트엔드(React)와 백엔드(Express)가 서로 다른 도메인/포트일 때 발생하는 보안 차단을 해제
+//origin: ENV.CLIENT_URL 이 URL에서 오는 요청만 허용.
+//credentials: true 쿠키, 인증 토큰 등을 포함한 요청을 허용, 로그인/세션 기반 인증을 쓰려면 반드시 필요
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true}))
+
+//요청에 포함된 쿠키를 읽어서 req.cookies에 파싱해주는 미들웨어
+//인증 시스템(JWT, 로그인, 로그아웃, 사용자인증 상태)을 사용할 거면 거의 필수
+app.use(cookieParser())
 
 app.use("/api/auth", authRoutes)
 app.use("/api/messages", messageRoutes)
@@ -34,5 +50,10 @@ if (ENV.NODE_ENV === "production") {
     });
 }
 
-app.listen(PORT, () => console.log("Server running on port:" + PORT ))
+app.listen(PORT, () => {
+    console.log("Server running on port:" + PORT )
+    connectDB();
+    }
+)
+
 
