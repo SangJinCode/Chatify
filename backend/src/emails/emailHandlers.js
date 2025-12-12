@@ -1,12 +1,13 @@
 import { resendClient, sender } from "../lib/resend.js"
 import { createWelcomeEmailTemplate } from "../emails/emailTemplates.js"
 
-export const sendWelcomeEmail = async (sendWelcomeEmail, name, clientURL) => {
+
+export const sendWelcomeEmail = async (email, name, clientURL) => {
     const { data, error} = await resendClient.emails.send({
         from: `${sender.name} <${sender.email}>`,
         to: email,
         subject: "Welcome to Chatify!",
-        html: createWelcomeEmailTemplate(name, clientURL),
+        html: createWelcomeEmailTemplate(name, clientURL), //메일 템플릿으로 name과 clientURL(frontend 주소) 전달
     })
 
     if (error) {

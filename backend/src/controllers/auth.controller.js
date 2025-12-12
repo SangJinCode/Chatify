@@ -44,7 +44,7 @@ export const signup = async (req, res) => {
         });
 
         if (newUser) {
-            //newUser를  DB에 저장
+            //입력된 유저 정보와 해쉬된 암호를 포함한 newUser를 DB에 저장
             const savedUser = await newUser.save();
 
             //DB에 저장한 유저 정보를 이용해  token 발행 후 res.cookie에 정보를 저장
