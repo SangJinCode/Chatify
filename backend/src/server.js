@@ -21,7 +21,7 @@ const PORT = ENV.PORT || 3000;
 //     res.send("Hello World!");
 // })
 
-//JSON 형식의 요청(body) 을 자동으로 파싱해서 req.body로 만들어주는 미들웨어
+//JSON 형식의 요청(body)을 자동으로 파싱해서 req.body로 만들어주는 미들웨어
 //POST 요청할 때 { name: "Tom" } 같은 body를 서버가 바로 읽을 수 있게 해줌
 app.use(express.json({ limit: "5mb" })); 
 

@@ -85,11 +85,11 @@ export const login = async (req, res) => {
         const user = await User.findOne({ email });
         if(!user) return res.status(400).json({ message: "Invalid credentials" });
 
-        // 유저가 입력한 password와 유에 저장된 password를 비교 일치하면 통과
+        //유저가 입력한 password와 DB에 저장된 password를 비교 일치하면 통과
         const isPasswordCorrect = await bcrypt.compare(password, user.password)
         if (!isPasswordCorrect) return res.status(400).json({ message: "Invalid credentials" });
 
-        //토큰 발행
+        //email과 password 검증 후 토큰 발행
         generateToken(user._id, res)
 
         res.status(200).json({
@@ -98,6 +98,7 @@ export const login = async (req, res) => {
             email: user.email,
             profilePic: user.profilePic,
          });
+
     } catch (error) {
         console.error("Error in login controller:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -105,32 +106,33 @@ export const login = async (req, res) => {
 }
 
 export const logout = (_, res) => {
+    //토콘의 maxAge를 0으로 변경하여 logout 실행
     res.cookie("jwt","", { maxAge: 0 })
     res.status(200).json({ message: "Logged out successfully" })
 };
 
-// export const updateProfile = async(req, res) => {
-//     try {
-//         const { profilePic }= req.body
-//         if (!profilePic) return res.status(400).json({ message: "Profile pic is required" });
+export const updateProfile = async(req, res) => {
+    try {
+        const { profilePic }= req.body
+        if (!profilePic) return res.status(400).json({ message: "Profile pic is required" });
 
-//         //user._id인 이유는 user가 미들웨어에서 검증 후 db에서 얻은 검증된 유저 정보를 req.user에 대입하기 때문이다.
-//         const userId = req.user._id
+        //user._id인 이유는 user가 미들웨어에서 검증 후 db에서 얻은 검증된 유저 정보를 req.user에 대입하기 때문이다.
+        const userId = req.user._id
 
-//         //cloudinary에 이미지 업데이트 후 url을 반환 받는다.
-//         const uploadResponse =  await cloudinary.uploader(profilePic)
+        //cloudinary에 이미지 업데이트 후 url을 반환 받는다.
+        const uploadResponse =  await cloudinary.uploader(profilePic)
 
-//         // 해당 유저에 이미지 url을 업데이트한다.
-//         const updatedUser = await User.findByIdAndUpdate(
-//             userId, 
-//         { profilePic: uploadResponse.secure_url },
-//         { new: ture} //업데이트 후의 최신 document를 반환
-//         );
+        // 해당 유저에 이미지 url을 업데이트한다.
+        const updatedUser = await User.findByIdAndUpdate(
+            userId, 
+        { profilePic: uploadResponse.secure_url },
+        { new: ture} //업데이트 후의 최신 document를 반환
+        );
 
-//         res.status(200).json(updatedUser)
+        res.status(200).json(updatedUser)
 
-//     } catch (error) {
-//         console.log("Error in update profile:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//     }
-// }
+    } catch (error) {
+        console.log("Error in update profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+    }
+}
