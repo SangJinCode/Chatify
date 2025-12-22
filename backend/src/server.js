@@ -8,12 +8,11 @@ import cors from "cors";
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js"
 import messageRoutes from "./routes/message.route.js"
+import { app, server } from "./lib/socket.js";
 
 //현재 작업 디렉터리(CWD)를 절대 경로로 반환
 const __dirname = path.resolve();
 console.log("__dirname",__dirname)
-
-const app = express();
 
 const PORT = ENV.PORT || 3000;
 
@@ -50,7 +49,7 @@ if (ENV.NODE_ENV === "production") {
     });
 }
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log("Server running on port:" + PORT )
     connectDB();
     }
